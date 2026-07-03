@@ -1,0 +1,4 @@
+add_library(EngineMath INTERFACE)
+target_include_directories(EngineMath INTERFACE include)
+target_compile_features(EngineMath INTERFACE cxx_std_20)
+target_link_libraries(EngineMath INTERFACE EngineFoundation)

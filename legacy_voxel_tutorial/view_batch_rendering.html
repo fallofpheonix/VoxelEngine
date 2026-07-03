@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Engine - Batch Rendering</title>
+    <style>
+        body { margin: 0; background: #111; color: white; font-family: sans-serif; overflow: hidden; }
+        #info { position: absolute; top: 10px; width: 100%; text-align: center; z-index: 100; }
+        #stats { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.5); padding: 10px; }
+    </style>
+</head>
+<body>
+    <div id="info">Voxel Engine: Batch Rendering (1 Draw Call per Chunk)</div>
+    <div id="stats">
+        Draw Calls: 1 (for 4,096 blocks)<br>
+        Status: Vertex Data uploaded to GPU
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Using InstancedMesh to simulate the "One Draw Call" principle
+        const CHUNK_SIZE = 16;
+        const totalBlocks = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+        
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: 0x228B22, flatShading: true });
+        
+        // This single object represents the entire chunk mesh in the GPU
+        const instancedMesh = new THREE.InstancedMesh(geometry, material, totalBlocks);
+        
+        const matrix = new THREE.Matrix4();
+        let index = 0;
+
+        // Generate the mesh data (similar to Chunk::CreateMesh)
+        for (let x = 0; x < CHUNK_SIZE; x++) {
+            for (let y = 0; y < CHUNK_SIZE; y++) {
+                for (let z = 0; z < CHUNK_SIZE; z++) {
+                    matrix.setPosition(x - CHUNK_SIZE/2, y - CHUNK_SIZE/2, z - CHUNK_SIZE/2);
+                    instancedMesh.setMatrixAt(index++, matrix);
+                }
+            }
+        }
+
+        scene.add(instancedMesh);
+
+        // Lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(10, 20, 10).normalize();
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        camera.position.set(20, 20, 20);
+        camera.lookAt(0, 0, 0);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            instancedMesh.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

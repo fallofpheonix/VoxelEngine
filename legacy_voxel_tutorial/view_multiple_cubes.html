@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Engine - Multiple Cubes</title>
+    <style>
+        body { margin: 0; background: #111; color: white; font-family: sans-serif; overflow: hidden; }
+        #info { position: absolute; top: 10px; width: 100%; text-align: center; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="info">Voxel Engine: 32x32x32 Grid Representation (Showing a 5x5x5 cluster)</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const group = new THREE.Group();
+        const size = 1;
+        const spacing = 1.1; // Add a tiny gap to see individual blocks
+
+        // Simulate the m_pBlocks[32][32][32] logic
+        // We render a 5x5x5 area for clarity
+        for (let x = 0; x < 5; x++) {
+            for (let y = 0; y < 5; y++) {
+                for (let z = 0; z < 5; z++) {
+                    const geometry = new THREE.BoxGeometry(size, size, size);
+                    const material = new THREE.MeshPhongMaterial({ 
+                        color: new THREE.Color(`hsl(${(x+y+z)*20}, 70%, 60%)`), 
+                        flatShading: true 
+                    });
+                    const cube = new THREE.Mesh(geometry, material);
+                    
+                    // Infer position from index
+                    cube.position.set(x * spacing, y * spacing, z * spacing);
+                    group.add(cube);
+                }
+            }
+        }
+        scene.add(group);
+
+        // Center the group
+        const box = new THREE.Box3().setFromObject(group);
+        const center = box.getCenter(new THREE.Vector3());
+        group.position.sub(center);
+
+        // Lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5).normalize();
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        camera.position.z = 10;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            group.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
