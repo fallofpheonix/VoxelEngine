@@ -24,6 +24,7 @@ struct MeshData {
 struct Material {
     ShaderHandle shader;
     TextureHandle texture;
+    Vector3 color{1.0f, 1.0f, 1.0f};
 };
 
 struct Camera {

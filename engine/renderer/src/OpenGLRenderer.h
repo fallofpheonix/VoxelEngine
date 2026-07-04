@@ -34,6 +34,8 @@ private:
     std::vector<unsigned int> m_textures;
 
     unsigned int m_currentShader = 0;
+    Matrix4 m_viewMatrix;
+    Matrix4 m_projectionMatrix;
 };
 
 } // namespace Engine

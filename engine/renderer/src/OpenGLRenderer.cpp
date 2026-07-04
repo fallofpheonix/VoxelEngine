@@ -176,7 +176,8 @@ void OpenGLRenderer::BeginFrame(const Camera& camera) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_currentShader = 0;
-    (void)camera;
+    m_viewMatrix = camera.view;
+    m_projectionMatrix = camera.projection;
 }
 
 void OpenGLRenderer::Submit(const RenderCommand& command) {
@@ -187,6 +188,20 @@ void OpenGLRenderer::Submit(const RenderCommand& command) {
     if (command.material.shader.IsValid()) {
         m_currentShader = m_shaders[command.material.shader.id - 1];
         glUseProgram(m_currentShader);
+    }
+
+    if (m_currentShader != 0) {
+        const int modelLoc = glGetUniformLocation(m_currentShader, "uModel");
+        const int viewLoc = glGetUniformLocation(m_currentShader, "uView");
+        const int projLoc = glGetUniformLocation(m_currentShader, "uProjection");
+        const int colorLoc = glGetUniformLocation(m_currentShader, "uColor");
+
+        if (modelLoc >= 0) glUniformMatrix4fv(modelLoc, 1, GL_FALSE, command.modelMatrix.Data());
+        if (viewLoc >= 0) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, m_viewMatrix.Data());
+        if (projLoc >= 0) glUniformMatrix4fv(projLoc, 1, GL_FALSE, m_projectionMatrix.Data());
+        if (colorLoc >= 0) {
+            glUniform3f(colorLoc, command.material.color.x, command.material.color.y, command.material.color.z);
+        }
     }
 
     if (command.material.texture.IsValid()) {
