@@ -12,6 +12,7 @@ endif()
 add_subdirectory(engine/foundation)
 add_subdirectory(engine/math)
 add_subdirectory(engine/platform)
+add_subdirectory(engine/renderer)
 add_subdirectory(sandbox)
 
 enable_testing()

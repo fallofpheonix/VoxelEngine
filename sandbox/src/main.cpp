@@ -2,20 +2,19 @@
 #include "Platform/Input.h"
 #include "Platform/Time.h"
 #include "Platform/Window.h"
+#include "Renderer/IRenderer.h"
 
 #include <GL/glew.h>
 
 #include <cmath>
 #include <memory>
 
-// Phase 1 deliverable: a window running at a stable FPS, driven entirely
-// through the Window/Input/Time platform abstractions (no direct GLFW calls
-// here). glClear below is a placeholder visual signal only -- the real
-// Renderer abstraction arrives in Phase 3.
 int main() {
     std::unique_ptr<Engine::Window> window =
         Engine::Window::Create({"Voxel Engine - Sandbox", 1280, 720});
     Engine::Input::Init(window.get());
+
+    std::unique_ptr<Engine::IRenderer> renderer = Engine::IRenderer::Create(window.get());
 
     float fpsAccumulator = 0.0f;
     int frameCount = 0;
