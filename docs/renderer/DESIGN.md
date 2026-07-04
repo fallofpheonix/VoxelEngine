@@ -1,11 +1,11 @@
 # Renderer — Design
 
-**Status: design, no implementation.** This document, `API.md`, and
-`ROADMAP.md` are written before any `engine/renderer/` code exists, per
+**Status: implemented, Stable.** This document, `API.md`, and
+`ROADMAP.md` were written before any `engine/renderer/` code existed, per
 `docs/architecture/ARCHITECTURE.md`'s "build only when two implementations
 exist" rule applied at the design level: understand the shape of the
 single (OpenGL) implementation before writing it, so the interface isn't
-just OpenGL with the names changed.
+just OpenGL with the names changed. All 13 roadmap steps are complete.
 
 ## What does the Renderer own?
 
