@@ -4,8 +4,6 @@
 #include "Platform/Window.h"
 #include "Renderer/IRenderer.h"
 
-#include <GL/glew.h>
-
 #include <cmath>
 #include <memory>
 
@@ -35,10 +33,9 @@ int main() {
             fpsAccumulator = 0.0f;
         }
 
-        const float t = Engine::Time::GetTime();
-        glClearColor(0.5f + 0.5f * std::sin(t), 0.5f + 0.5f * std::sin(t + 2.0f),
-                     0.5f + 0.5f * std::sin(t + 4.0f), 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        Engine::Camera cam{};
+        renderer->BeginFrame(cam);
+        renderer->EndFrame();
 
         window->SwapBuffers();
     }
